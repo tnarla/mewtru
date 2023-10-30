@@ -13,7 +13,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="h-ful flex flex-col gap-8">
+        <div className="h-full flex flex-col gap-8">
           <a className="uppercase font-extrabold text-6xl cursor-pointer flex gap-3 items-stretch group">
             <div className="w-2 relative">
               {Array.from({ length: 3 }, (_, i) => (
