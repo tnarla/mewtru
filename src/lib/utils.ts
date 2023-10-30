@@ -11,3 +11,9 @@ export function randomizeNumbers(length: number) {
     Array.from({ length }, (_, i) => [i, i]).flat()
   );
 }
+
+
+console.log("JavaScript so good, yes yes :)");
+
+
+console.log("JavaScript so good yes yes :) ")

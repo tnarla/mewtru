@@ -1,34 +1,71 @@
-// Rhythm: Build something that has a sense of rhythm, whether in
-// visual design, user interaction, or actual musical rhythm.
 "use client";
-import { randomizeNumbers } from "@/lib/utils";
-import { useState } from "react";
 
-// Tap tap game
-// looper game
-// memory game <- this one
-// typing game but you have to type to a beat
+import { useEffect, useRef, useState } from "react";
+import { motion, useSpring } from "framer-motion";
 
-export default function Rhythm() {
-  const [numbers, setNumbers] = useState<number[]>(randomizeNumbers(10));
+const BIG_SIZE = 120;
+const SMALL_SIZE = 15;
+const PER_PX = 0.3;
+
+function Dot({ mousePos }: { mousePos: { x: number; y: number } }) {
+
+  const size = useSpring(SMALL_SIZE, 
+    { damping: 30, stiffness: 200 });
+
+
+  const dotRef = useRef<HTMLDivElement>(null);
+
+
+
+  useEffect(() => {
+    if (!dotRef.current) return;
+    const { x, y } = mousePos;
+    const { x: dotX, y: dotY } = dotRef.current.getBoundingClientRect();
+
+
+    const distance = Math.sqrt(
+      Math.pow(Math.abs(x - dotX), 2) + 
+      Math.pow(Math.abs(y - dotY), 2)
+    );
+
+    size.set(Math.max(BIG_SIZE - PER_PX * distance, SMALL_SIZE));
+    
+  }, [mousePos, size]);
 
   return (
-    <div className="grid grid-cols-5 gap-4">
-      {numbers.map((num, i) => (
-        <Card key={num} item={num} />
-      ))}
+    <div ref={dotRef} className="relative">
+      <motion.div
+        className="bg-green-600 rounded-full absolute -translate-y-1/2 -translate-x-1/2"
+        style={{ width: size, height: size }}
+      />
     </div>
   );
 }
 
-interface CardProps {
-  item: number;
-}
+export default function Rhythm() {
 
-function Card({ item }: CardProps) {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handler);
+
+    return () => {
+      window.removeEventListener("mousemove", handler);
+    };
+  });
+
+
+
   return (
-    <div className="rounded-xl shadow-xl bg-white text-black p-4 text-3xl flex items-center justify-center">
-      {item}
+    <div className="flex flex-wrap w-[1000px] gap-24 mx-auto p-12">
+      {Array.from({ length: 100 }, (_, i) => (
+        <Dot key={i} mousePos={mousePos}></Dot>
+      ))}
     </div>
   );
 }
